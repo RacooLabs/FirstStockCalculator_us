@@ -1,22 +1,30 @@
 package com.racoo.firststockcalculatorus;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
@@ -28,7 +36,8 @@ import static java.lang.Double.parseDouble;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextInputEditText TextInputEdit_principal, TextInputEdit_number_days,
+    private ConstraintLayout mainLayout;
+    private EditText TextInputEdit_principal, TextInputEdit_number_days,
             TextInputEdit_rate_return;
     private TextView TextView_result_money;
     private RelativeLayout RelativeLayout_btn_refresh;
@@ -51,13 +60,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         Intent intent = new Intent(this, LoadingActivity.class);
         startActivity(intent);
 
 
         setCom();
 
-        MobileAds.initialize(this, "ca-app-pub-7972968096388401~6007351448");
+        mainLayout.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                hideKeyboard();
+                return false;
+            }
+        });
+
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
 
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -79,9 +105,11 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main_global_constraint);
 
-        TextInputEdit_principal = findViewById(R.id.TextInputText_principal_set);
-        TextInputEdit_number_days = findViewById(R.id.TextInputEdit_number_days_set);
-        TextInputEdit_rate_return = findViewById(R.id.TextInputEdit_rate_return_set);
+
+        mainLayout=findViewById(R.id.mainLayout);
+        TextInputEdit_principal = findViewById(R.id.TextInputText_principal);
+        TextInputEdit_number_days = findViewById(R.id.TextInputEdit_number_days);
+        TextInputEdit_rate_return = findViewById(R.id.TextInputEdit_rate_return);
         TextView_result_money = findViewById(R.id.TextView_result_money);
         RelativeLayout_btn_refresh = findViewById(R.id.RelativeLayout_btn_refresh);
 
@@ -248,6 +276,12 @@ public class MainActivity extends AppCompatActivity {
 
         return bigDecimal5.subtract(bigDecimal0).setScale(0, RoundingMode.FLOOR);
 
+    }
+
+    public void hideKeyboard()
+    {
+        InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(mainLayout.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
 

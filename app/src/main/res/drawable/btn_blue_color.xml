@@ -9,7 +9,7 @@
         <shape android:shape="rectangle">
 
             <corners android:radius="50dp"/>
-            <solid android:color="#399E39"/>
+            <solid android:color="#00031A"/>
 
         </shape>
 
@@ -30,7 +30,7 @@
         <shape android:shape="rectangle">
 
             <corners android:radius="50dp"/>
-            <solid android:color="#66CC66"/>
+            <solid android:color="#000747"/>
 
         </shape>
 
